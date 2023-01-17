@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Models\Technology;
 use App\Models\Type;
 use Illuminate\Support\Str;
 
@@ -32,7 +33,8 @@ class ProjectController extends Controller
     {
 
         $types = Type::all();
-        return view('admin.projects.create', compact('types'));
+        $technologies = Technology::all();
+        return view('admin.projects.create', compact('types','technologies'));
     }
 
     /**
@@ -48,7 +50,11 @@ class ProjectController extends Controller
         $project_slug = str::slug($val_data['project_title']);
         $val_data['slug'] = $project_slug;
 
-        Project::create($val_data);
+        $project=    Project::create($val_data);
+
+        $project->technologies()->attach($val_data['technologies']);
+
+
 
         return to_route('admin.projects.index')->with('message', 'Projects added succesfully');
     }
